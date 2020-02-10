@@ -7,7 +7,7 @@ from fractions import Fraction
 
 from sympy.ntheory import totient
 
-from functions import lcm, extended_gcd
+from pyutils.math.functions import lcm, extended_gcd
 
 def extended_fibonacci(x, y):
     """An extension of the Fibonacci sequence to any two integers."""

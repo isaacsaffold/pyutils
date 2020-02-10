@@ -2,7 +2,7 @@
 
 from math import log, factorial
 
-from pyutils.mathematics import EULER_MASC
+from pyutils.math import EULER_MASC
 
 def derivative(func, x, delta_x):
     """Approximates the derivative of a function at 'x' using its limit
@@ -50,7 +50,3 @@ def li(x, n):
     for i in range(1, n+1):
         result += u**i / (i * factorial(i))
     return result
-
-    
-
-    
