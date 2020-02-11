@@ -93,9 +93,31 @@ def farey_length(n):
         yield length
         length += totient(i + 1)
 
+def _fract_comp(r, s):
+    return r[0]*s[1] - r[1]*s[0]
+
+def _impl_fract_ceil(first, last, fract, n):
+    # binary search in Stern-Brocot tree
+    if fract in (first, last):
+        return fract
+    else:
+        mediant = tuple(map(add, first, last))
+        if mediant[1] > n:
+            return last
+        elif _fract_comp(fract, mediant) < 0:
+            return _impl_fract_ceil(first, mediant, fract, n)
+        else:
+            return _impl_fract_ceil(mediant, last, fract, n)
+
+def _fract_ceil(fract, n):
+    """Finds first fraction in nth Farey sequence that is greater than
+    or equal to 'fract'."""
+    return _impl_fract_ceil((0, 1), (1, 1), fract, n)
+    
+
 def farey(n, first=(0, 1), last=(1, 1)):
     """Yields the terms of the nth Farey sequence from 'first' to
-    'last', inclusive.
+    'last', inclusive. 'n' must be a positive integer.
 
     This function utilizes the algorithm described in the Wikipedia
     article on Farey sequences to generate every term except the first
@@ -103,16 +125,18 @@ def farey(n, first=(0, 1), last=(1, 1)):
     """
     # reduces 'first' and 'last'
     r, s = Fraction(*first), Fraction(*last)
-    a, b, last = r.numerator, r.denominator, (s.numerator, s.denominator)
-    # finds second term
+    first, last = (r.numerator, r.denominator), (s.numerator, s.denominator)
+    # finds first and second term
+    a, b = first if first[1] <= n else _fract_ceil(first, n)
     x, y = extended_gcd(b, -a)[1:]
     r = (n - y) // b
     c, d = r*a + x, r*b + y
-    while (a, b) != last:
+    while _fract_comp((a, b), last) < 0:
         yield (a, b)
         r = (n + b) // d
         a, b, c, d = c, d, r*c - a, r*d - b
-    yield (a, b)
+    if (a, b) == last:
+        yield last
 
 def perfect_squares(a, b):
     """Yields the perfect squares in the interval [a**2, b**2)."""
