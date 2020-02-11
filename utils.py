@@ -1,16 +1,6 @@
-from functools import wraps
 from itertools import starmap, repeat
 from string import digits
 from random import choices
-
-def memoized(f):
-    memo = {}
-    @wraps(f)
-    def _(*args):
-        if args not in memo:
-            memo[args] = f(*args)
-        return memo[args]
-    return _
 
 def ensure_unique(iterable, max_skips=float('inf')):
     """Yields the unique elements of an iterable, skipping those that

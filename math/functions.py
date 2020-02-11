@@ -3,13 +3,11 @@
 from collections import namedtuple
 from collections.abc import Iterable
 from math import gcd
-from functools import reduce, partial
+from functools import reduce, partial, lru_cache
 from operator import mul
 from fractions import Fraction
 
 import sympy.ntheory as nthry
-
-from pyutils.utils import memoized
 
 def lcm(*args):
     """Finds the least common multiple of an arbitrary number of
@@ -43,7 +41,7 @@ def primorial_totient(n):
     """Returns the totient of a given primorial."""
     return reduce(mul, (p-1 for p in nthry.primerange(2, nthry.prime(n + 1))))
 
-@memoized
+@lru_cache(None)
 def fusc(n):
     """Returns a given term of Stern's diatomic sequence."""
     if n == 0:
@@ -79,7 +77,7 @@ gcd_composition.__doc__ = "For a function 'f', returns a function 'h' such " \
 def dirichlet_inverse(f):
     if not f(1):
         raise ValueError("Function 'f' is not invertible, as f(1) == 0.")
-    @memoized
+    @lru_cache(None)
     def g(n):
         divs = nthry.divisors(n)[:-1]
         x = -sum(f(n//d)*g(d) for d in divs) if divs else 1
